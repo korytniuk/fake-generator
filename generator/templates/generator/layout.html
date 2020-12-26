@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Fake Generator{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.0/cerulean/bootstrap.min.css" integrity="sha384-b+jboW/YIpW2ZZYyYdXczKK6igHlnkPNfN9kYAbqYV7rNQ9PKTXlS2D6j1QZIATW" crossorigin="anonymous">
+        <link href="{% static 'fake-generator/styles.css' %}" rel="stylesheet">
+    </head>
+    <body>
+        <h1>Fake Generator</h1>
+        <div class="position-absolute text-right pr-5 w-100">
+            {% if user.is_authenticated %}
+                Signed In as <span class="badge badge-pill badge-secondary">{{ user.username }}</span>
+            {% else %}
+                Not Signed In.
+            {% endif %}
+        </div>
+        <ul class="nav nav-tabs">
+            <!-- <li class="nav-item">
+                {% url 'listings' as listings %}
+                <a class="nav-link {% ifequal request.path listings %}active{% endifequal %}" href="{{ listings }}">Active Listings</a>
+            </li> -->
+            <!-- <li class="nav-item">
+                {% url 'categories' as categories %}
+                <a class="nav-link {% ifequal request.path categories %}active{% endifequal %}" href="{{ categories }}">Categories</a>
+            </li>
+            <li class="nav-item">
+                {% url 'watchlist' as watchlist %}
+                <a class="nav-link {% ifequal request.path watchlist %}active{% endifequal %}" href="{{ watchlist }}">Watchlist</a>
+            </li> -->
+            <li class="nav-item"> 
+                {% url 'create' as create %}
+                <a class="nav-link {% ifequal request.path create %}active{% endifequal %}" href="{{ create }}">Create Listing</a>
+            </li>
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    {% url 'login' as login %}
+                    <a class="nav-link {% ifequal request.path login %}active{% endifequal %}" href="{{ login }}">Log In</a>
+                </li>
+            {% endif %}
+        </ul>
+        {% block body %}
+        {% endblock %}
+    </body>
+</html>
