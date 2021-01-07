@@ -1,0 +1,63 @@
+{% extends 'generator/layout.html' %}
+{% block title %}Schemas{% endblock %}
+{% block body %}
+<div class="d-flex flex-row align-items-center justify-content-between">
+    <h2>Schemas</h2>
+    <a class="btn btn-success" href="{% url 'schema_create' %}" role="button">New schema</a>
+</div>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Title</th>
+            <th scope="col">Modified</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for schema in schemas %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td><a href="{% url 'datasets' schema.id %}">{{schema.title}}</a></td>
+            <td>{{schema.updated_at | date:'Y-m-d'}}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Actions">
+                    <a type="button" class="btn btn-light" href="{% url 'schema_edit' schema.id %}"
+                        aria-label="Edit form">Edit</a>
+                    <button type="button" class="btn btn-danger delete-schema" data-id="{{schema.id}}">Delete</button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% csrf_token %}
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", (event) => {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const handleDelete = (id) => {
+            if (confirm('Are you sure?')) {
+                const request = new Request(
+                    `/schema_delete/${id}/`,
+                    { headers: { 'X-CSRFToken': csrftoken } }
+                );
+                fetch(request, {
+                    method: "DELETE"
+                }).then(
+                    (res) => {
+                        if (res.status === 200) location.reload();
+                    }
+                );
+            }
+        };
+
+        document.querySelectorAll('.delete-schema').forEach(element => {
+            element.onclick = () => { handleDelete(element.dataset.id) }
+        })
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'generator/layout.html' %}
+{% block title %}Data Sets{% endblock %}
+{% block body %}
+<div class="d-flex flex-row align-items-center justify-content-between">
+    <h2>Data Sets</h2>
+    <div>
+        <form class="form-row align-items-center" method="POST">
+            {% csrf_token %}
+            <div class="col form-inline">
+                <label for="rowsInput">Rows:</label>
+                <input id="rowsInput" name="rows" class="form-control ml-2" type="number" min="1">
+            </div>
+            <button class="btn btn-success" type="submit">Generate data</button>
+        </form>
+    </div>
+</div>
+{% if datasets %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Created</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for dataset in datasets %}
+        <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+            <td>{{dataset.created_at | date:'Y-m-d'}}</td>
+            <td>{{dataset.get_status_display}}</td>
+            <td>
+                <div class="btn-group" role="group" aria-label="Actions">
+                    <a type="button" class="btn btn-light" href="#" aria-label="Download dataset">Download</a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        </tr>
+    </tbody>
+</table>
+{% else %}
+<div class="d-flex align-items-center justify-content-center" style="height:400px">
+    <p class="display-4">There are no datsets yet</p>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script>
+</script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'generator/layout.html' %}
+
+{% block title %}Edit Schema{% endblock %}
+
+{% block body %}
+{% load crispy_forms_tags %}
+
+<form method="POST">
+    <div class="d-flex flex-row align-items-center justify-content-between">
+        <p class="h2">New schema</p>
+        <input class="btn btn-primary" type="submit" value="save">
+    </div>
+    {% csrf_token %}
+    {{ form | crispy }}
+    <p class="h2">Schema Columns</p>
+    {{formset.management_form}}
+    {% for form_column in formset %}
+    <div class="form-row column-row align-items-center">
+        {{form_column.id}}
+        <div class="col">
+            {{form_column.name|as_crispy_field}}
+        </div>
+        <div class="col">
+            {{form_column.column_type|as_crispy_field}}
+        </div>
+        <div class="col row">
+            <div class="col range d-none">
+                {{form_column.range_from|as_crispy_field}}
+            </div>
+            <div class="col range d-none">
+                {{form_column.range_to|as_crispy_field}}
+            </div>
+        </div>
+        <div class="d-none">
+            {{form_column.DELETE}}
+        </div>
+        <div class="col">
+            {{form_column.order|as_crispy_field}}
+        </div>
+        <div class="col-auto mt-3">
+            <button class="btn btn-danger delete-btn" type="button">delete</button>
+        </div>
+    </div>
+    {% endfor %}
+    <button class="btn btn-primary" id="add-column" type="button">add column</button>
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        handleSchemaForm();
+
+        document.querySelector("form").addEventListener("click", (e) => {
+            if (e.target.classList.contains("delete-btn")) {
+                const row = e.target.closest(".form-row")
+                row.classList.add('d-none');
+                row.querySelector('input[type="checkbox"]').checked = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

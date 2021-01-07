@@ -1,0 +1,18 @@
+COMMA = 1
+TAB = 2
+
+SEPARATOR_CHOICES = (
+    (COMMA, ','),
+    (TAB, 'TAB'),
+) 
+
+
+PENDING_STATUS = 1
+PROCESSING_STATUS = 2
+READY_STATUS = 3
+
+STATUS_CHOICES = (
+    (PENDING_STATUS, 'Pending'),
+    (PROCESSING_STATUS, 'Processing'),
+    (READY_STATUS, 'Ready'),
+)
