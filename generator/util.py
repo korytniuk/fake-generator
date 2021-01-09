@@ -1,10 +1,11 @@
+
 COMMA = 1
 TAB = 2
 
 SEPARATOR_CHOICES = (
     (COMMA, ','),
     (TAB, 'TAB'),
-) 
+)
 
 
 PENDING_STATUS = 1

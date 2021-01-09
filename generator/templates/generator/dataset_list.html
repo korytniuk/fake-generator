@@ -31,9 +31,12 @@
             <td>{{dataset.created_at | date:'Y-m-d'}}</td>
             <td>{{dataset.get_status_display}}</td>
             <td>
+                {% if dataset.link %}
                 <div class="btn-group" role="group" aria-label="Actions">
-                    <a type="button" class="btn btn-light" href="#" aria-label="Download dataset">Download</a>
+                    <a type="button" class="btn btn-light" href="{{ dataset.link.url }}" download
+                        aria-label="Download dataset">Download</a>
                 </div>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

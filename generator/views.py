@@ -1,15 +1,15 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST, require_http_methods
+from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.urls import reverse
-from django.core.exceptions import ObjectDoesNotExist
 
-from .models import SchemaTemplate, SchemaTemplateColumn, DataSet
+from .models import SchemaTemplate, DataSet
 from .forms import SchemaForm, SchemaColumnFormset
+from .tasks import generate_fake_file 
 
 
 def index(request):
@@ -51,9 +51,16 @@ class DataSetList(LoginRequiredMixin, generic.ListView):
             filter(schema=self.kwargs['id']).order_by('-created_at')
 
     def post(self, request, *args, **kwargs):
-        # todo call generator function
-        schema_id = kwargs.get('id')
-        print(request.POST)
+        print('requested')
+        try:
+            schema_id = int(kwargs.get('id'))
+            rows = int(request.POST.get('rows'))
+            # heroku: change to generate_fake_file.delay(schema_id, rows)
+            generate_fake_file(schema_id, rows)
+        except ValueError:
+            print('error')
+            pass
+
         return HttpResponseRedirect(reverse('datasets', args=[schema_id]))
 
 
@@ -112,8 +119,3 @@ def schema_delete(request, id):
     item.save()
 
     return HttpResponse("Success", status=200)
-
-
-@require_POST
-def generate_fake_data(request, id):
-    pass

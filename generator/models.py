@@ -47,8 +47,8 @@ class DataSet(TimeStampMixin):
     schema = models.ForeignKey(SchemaTemplate, on_delete=models.DO_NOTHING)
     status = models.SmallIntegerField(
         choices=STATUS_CHOICES, default=PENDING_STATUS)
-    link = models.CharField(default=None, null=True,
-                            blank=True, max_length=255)
+    link = models.FileField(default=None, null=True,
+                            blank=True)
 
     def __str__(self):
         return str(self.schema) + ' ' + self.get_status_display()
