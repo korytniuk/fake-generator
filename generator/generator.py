@@ -16,8 +16,13 @@ DATE = 'Date'
 TEXT = 'Text'
 FULL_NAME = 'Full Name'
 
+ROWS_LIMIT = 1000000
+
 
 def generate_csvfile(dataset_id, length):
+    if length > ROWS_LIMIT:
+        return
+
     try:
         dataset = DataSet.objects.get(id=dataset_id)
         schema = dataset.schema
