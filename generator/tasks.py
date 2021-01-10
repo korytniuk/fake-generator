@@ -7,7 +7,6 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
-def generate_fake_file(schema_id, rows):
+def generate_fake_file(dataset_id, rows):
     """generates a fake csv file with speicified number of rows"""
-    logger.info("generate a fake csv file")
-    return generate_csvfile(schema_id, rows)
+    return generate_csvfile(int(dataset_id), int(rows))

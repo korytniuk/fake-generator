@@ -29,7 +29,13 @@
         <tr>
             <th scope="row">{{ forloop.counter }}</th>
             <td>{{dataset.created_at | date:'Y-m-d'}}</td>
-            <td>{{dataset.get_status_display}}</td>
+            <td>
+                {% if dataset.status == READY_STATUS %}
+                <span class="badge badge-pill badge-success">{{dataset.get_status_display}}</span>
+                {% else %}
+                <span class="badge badge-pill badge-secondary">{{dataset.get_status_display}}</span>
+                {% endif %}
+            </td>
             <td>
                 {% if dataset.link %}
                 <div class="btn-group" role="group" aria-label="Actions">
@@ -52,6 +58,36 @@
 {% endblock %}
 
 {% block script %}
+
+{% if task_id %}
 <script>
+    const taskUrl = "{% url 'task' task_id %}";
+    document.addEventListener('DOMContentLoaded', (event) => {
+        let timer = setInterval(function () {
+            fetch(taskUrl).then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    const taskStatus = data.task_status
+                    if (taskStatus === 'SUCCESS') {
+                        clearTimer();
+                        // in case of multiple files just reload the page
+                        location.href = location.href
+                        // or use socket.io 
+                    } else if (taskStatus === 'FAILURE') {
+                        clearTimer();
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                    clearTimer();
+                });
+        }, 700);
+        function clearTimer() {
+            clearInterval(timer);
+        }
+    })
+
 </script>
+{% endif %}
+
 {% endblock %}

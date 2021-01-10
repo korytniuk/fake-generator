@@ -4,7 +4,7 @@ function setSelectedManually(element) {
 
 function toggleRange(element) {
   nodes = element.closest(".form-row").querySelectorAll(".range");
-  if ([2, 4].some((x) => x === element.selectedIndex)) {
+  if (['Integer', 'Text'].some((x) => x === element[element.selectedIndex].text)) {
     nodes.forEach((e) => {
       e.classList.remove("d-none");
     });

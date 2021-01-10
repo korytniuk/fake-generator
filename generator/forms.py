@@ -1,14 +1,11 @@
 from django import forms
-from .models import SchemaTemplate, SchemaTemplateColumn, SchemaColumnType
-from .util import SEPARATOR_CHOICES
+from .models import SchemaTemplate, SchemaTemplateColumn
 
 
 class SchemaForm(forms.ModelForm):
-    column_separator = forms.ChoiceField(choices=SEPARATOR_CHOICES)
-
     class Meta:
         model = SchemaTemplate
-        fields = ('title', 'column_separator')
+        fields = ('title', 'column_separator', 'string_character')
 
 
 class SchemaColumnForm(forms.ModelForm):

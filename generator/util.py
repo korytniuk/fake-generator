@@ -1,10 +1,22 @@
 
 COMMA = 1
 TAB = 2
+COMMA_TEXT = ','
+TAB_TEXT = 'TAB'
 
 SEPARATOR_CHOICES = (
-    (COMMA, ','),
-    (TAB, 'TAB'),
+    (COMMA, COMMA_TEXT),
+    (TAB, TAB_TEXT),
+)
+
+DOUBLE_QUOTE = 1
+VERTICAL_BAR = 2
+DQ_TEXT = '"'
+VB_TEXT = '|'
+
+QUOTE_CHOICES = (
+    (DOUBLE_QUOTE, DQ_TEXT),
+    (VERTICAL_BAR, VB_TEXT),
 )
 
 
@@ -17,3 +29,6 @@ STATUS_CHOICES = (
     (PROCESSING_STATUS, 'Processing'),
     (READY_STATUS, 'Ready'),
 )
+
+delimiters = {COMMA: COMMA_TEXT, TAB: '\t'}
+quotes = {DOUBLE_QUOTE: DQ_TEXT, VERTICAL_BAR: VB_TEXT}

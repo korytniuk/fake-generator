@@ -2,18 +2,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 from django.urls import reverse
+from celery import current_app
 
 from .models import SchemaTemplate, DataSet
 from .forms import SchemaForm, SchemaColumnFormset
-from .tasks import generate_fake_file 
+from .tasks import generate_fake_file
+from .util import READY_STATUS
 
 
+@login_required
 def index(request):
-    return render(request, "generator/index.html")
+    return HttpResponseRedirect(reverse('schema_list'))
 
 
 def login_view(request):
@@ -42,26 +45,29 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
-class DataSetList(LoginRequiredMixin, generic.ListView):
-    context_object_name = 'datasets'
-    template_name = 'generator/dataset_list.html'
+@login_required
+@require_http_methods(["GET", "POST"])
+def dataset_list(request, id):
+    schema_id = int(id)
+    task_id = None
+    task_status = None
 
-    def get_queryset(self):
-        return DataSet.objects.\
-            filter(schema=self.kwargs['id']).order_by('-created_at')
+    if request.method == 'POST':
+        rows = int(request.POST.get('rows'))
+        schema = get_object_or_404(SchemaTemplate, id=schema_id)
+        dataset = DataSet(schema=schema)
+        dataset.save()
+        task = generate_fake_file.delay(dataset.id, rows)
+        task_id = task.id
+        task_status = task.status
 
-    def post(self, request, *args, **kwargs):
-        print('requested')
-        try:
-            schema_id = int(kwargs.get('id'))
-            rows = int(request.POST.get('rows'))
-            # heroku: change to generate_fake_file.delay(schema_id, rows)
-            generate_fake_file(schema_id, rows)
-        except ValueError:
-            print('error')
-            pass
+    datasets = DataSet.objects.filter(schema=schema_id).order_by('-created_at')
 
-        return HttpResponseRedirect(reverse('datasets', args=[schema_id]))
+    return render(request, "generator/dataset_list.html",
+                  context={'datasets': datasets,
+                           'READY_STATUS': READY_STATUS,
+                           "task_id": task_id,
+                           "task_status": task_status})
 
 
 class SchemaTemplateList(LoginRequiredMixin, generic.ListView):
@@ -119,3 +125,11 @@ def schema_delete(request, id):
     item.save()
 
     return HttpResponse("Success", status=200)
+
+
+class TaskView(generic.View):
+    def get(self, request, task_id):
+        task = current_app.AsyncResult(task_id)
+        response_data = {'task_status': task.status, 'task_id': task.id}
+
+        return JsonResponse(response_data)

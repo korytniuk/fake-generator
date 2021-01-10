@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .util import STATUS_CHOICES, PENDING_STATUS, SEPARATOR_CHOICES, COMMA
+from .util import STATUS_CHOICES, PENDING_STATUS, SEPARATOR_CHOICES, COMMA, DOUBLE_QUOTE, QUOTE_CHOICES
 
 
 class TimeStampMixin(models.Model):
@@ -15,6 +15,9 @@ class SchemaTemplate(TimeStampMixin):
     title = models.CharField(max_length=255)
     column_separator = models.SmallIntegerField(
         choices=SEPARATOR_CHOICES, default=COMMA)
+    string_character = models.SmallIntegerField(
+        choices=QUOTE_CHOICES, default=DOUBLE_QUOTE)
+
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
