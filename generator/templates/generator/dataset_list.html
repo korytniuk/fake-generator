@@ -71,7 +71,7 @@
                     if (taskStatus === 'SUCCESS') {
                         clearTimer();
                         // in case of multiple files just reload the page
-                        location.href = location.href
+                        location.href = location.href.split('/').slice(0,-2).join('/')
                         // or use socket.io 
                     } else if (taskStatus === 'FAILURE') {
                         clearTimer();
