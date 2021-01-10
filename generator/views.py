@@ -47,10 +47,8 @@ def logout_view(request):
 
 @login_required
 @require_http_methods(["GET", "POST"])
-def dataset_list(request, id):
+def dataset_list(request, id, task_id=None):
     schema_id = int(id)
-    task_id = None
-    task_status = None
 
     if request.method == 'POST':
         rows = int(request.POST.get('rows'))
@@ -58,16 +56,16 @@ def dataset_list(request, id):
         dataset = DataSet(schema=schema)
         dataset.save()
         task = generate_fake_file.delay(dataset.id, rows)
-        task_id = task.id
-        task_status = task.status
+
+        return HttpResponseRedirect(
+            reverse('datasets', args=[id, task.id]))
 
     datasets = DataSet.objects.filter(schema=schema_id).order_by('-created_at')
 
     return render(request, "generator/dataset_list.html",
                   context={'datasets': datasets,
                            'READY_STATUS': READY_STATUS,
-                           "task_id": task_id,
-                           "task_status": task_status})
+                           "task_id": task_id})
 
 
 class SchemaTemplateList(LoginRequiredMixin, generic.ListView):

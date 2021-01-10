@@ -13,5 +13,6 @@ urlpatterns = [
     path("schema_edit/<int:id>/", views.schema_edit, name="schema_edit"),
     path("schema_create/", views.schema_create, name="schema_create"),
     path("datasets/<int:id>/", views.dataset_list, name="datasets"),
+    path("datasets/<int:id>/<str:task_id>/", views.dataset_list, name="datasets"),
     path("task/<str:task_id>/", views.TaskView.as_view(), name='task'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
